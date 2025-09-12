@@ -1,0 +1,4 @@
+github.com/go-dev-frame/sponge v1.15.1 h1:I+2bWBQHqySkmG4d/K+KaYUeU37wjuiOaO6pT8dMSno=
+github.com/go-dev-frame/sponge v1.15.1/go.mod h1:kTYWZQUSR5Iuu9Ur4tHC+v/1eP48W7hGxhvO6hVylNs=
+github.com/sashabaranov/go-openai v1.41.1 h1:zf5tM+GuxpyiyD9XZg8nCqu52eYFQg9OOew0gnIuDy4=
+github.com/sashabaranov/go-openai v1.41.1/go.mod h1:lj5b/K+zjTSFxVLijLSTDZuP7adOgerWeFyZLUhAKRg=
