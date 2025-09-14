@@ -3,20 +3,14 @@ package internal
 import (
 	"fmt"
 	"log"
-	"math/rand"
 	"strings"
 	"sync"
-	"time"
 
 	"git.mmeiblog.cn/mei/aiComplain/pkg/ai"
 	"git.mmeiblog.cn/mei/aiComplain/pkg/napcat"
 	"git.mmeiblog.cn/mei/aiComplain/tools"
 	"github.com/gorilla/websocket"
 )
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
 
 var writeMutex sync.Mutex
 
@@ -33,7 +27,7 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 
 	// 功能部分
 	var returnMessage string
-	if strings.Contains(GroupMsg.Message[0].Data.Text, "天钿") || strings.Contains(GroupMsg.Message[0].Data.Text, "/chat") {
+	if strings.Contains(GroupMsg.Message[0].Data.Text, "/chat") {
 		log.Println("触发关键词")
 		returnMessage, err = ai.SendComplain(GroupMsg.Message[0].Data.Text[5:])
 		if err != nil {
@@ -46,15 +40,6 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 		if err != nil {
 			log.Println(err)
 			returnMessage = fmt.Sprintf("Ping失败:%s", err)
-		}
-	} else if rand.Float64() < 0.5 {
-		log.Println("随机决定不回复此消息")
-		return
-	} else {
-		returnMessage, err = ai.SendComplain(GroupMsg.Message[0].Data.Text)
-		if err != nil {
-			log.Printf("ai处理失败: %v", err)
-			return
 		}
 	}
 
