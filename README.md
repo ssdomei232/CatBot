@@ -1,8 +1,6 @@
-# aiComplain
+# CatBot
 
 一个 QQ 机器人，调用 napcat 的 websocket 接口
-
-仓库里的 secret 要么过期要么是内网环境，不要想什么
 
 ## `pkg/napcat`
 

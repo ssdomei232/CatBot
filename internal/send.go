@@ -6,9 +6,9 @@ import (
 	"strings"
 	"sync"
 
-	"git.mmeiblog.cn/mei/aiComplain/pkg/ai"
-	"git.mmeiblog.cn/mei/aiComplain/pkg/napcat"
-	"git.mmeiblog.cn/mei/aiComplain/tools"
+	"git.mmeiblog.cn/mei/CatBot/pkg/ai"
+	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
+	"git.mmeiblog.cn/mei/CatBot/tools"
 	"github.com/gorilla/websocket"
 )
 
@@ -24,6 +24,10 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 	if len(GroupMsg.Message) == 0 || GroupMsg.Message[0].Data.Text == "" {
 		return
 	}
+
+	// 每次消息都需要执行的部分
+	Record(*GroupMsg)
+	//TODO: Record & Review
 
 	// 功能部分
 	var returnMessage string

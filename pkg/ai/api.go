@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
-	"git.mmeiblog.cn/mei/aiComplain/configs"
+	"git.mmeiblog.cn/mei/CatBot/configs"
 )
 
 // 定义请求格式（兼容 OpenAI 格式）
@@ -84,10 +85,14 @@ func (c *Client) Send(messages []ChatMessage) (string, error) {
 }
 
 func NewClient(message string, prompt string, model string) (string, error) {
+	Config, err := configs.GetConfig()
+	if err != nil {
+		log.Fatalf("加载配置失败: %v", err)
+	}
 	var c Client
-	c.BaseURL = configs.OPEN_LIKE_URL
+	c.BaseURL = Config.OpenaiLikeUrl
 	c.Model = model
-	c.APIKey = configs.OPENAI_LIKE_API_KEY
+	c.APIKey = Config.AiApiKey
 	msgs := []ChatMessage{
 		{Role: "system", Content: prompt},
 		{Role: "user", Content: message},

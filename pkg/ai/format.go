@@ -1,7 +1,9 @@
 package ai
 
 import (
-	"git.mmeiblog.cn/mei/aiComplain/configs"
+	"log"
+
+	"git.mmeiblog.cn/mei/CatBot/configs"
 )
 
 type ComplainMessage struct {
@@ -13,9 +15,13 @@ type AuditMessage struct {
 	Reason   string `json:"reason"`
 }
 
-// SendComplain 发送返回一个ai的吐槽内容
+// SendComplain 返还ai的话
 func SendComplain(message string) (response string, err error) {
-	response, err = NewClient(message, configs.COMPLAIN_PROMPT_TEMPLATE, configs.LLM_MODEL_LARGE)
+	Config, err := configs.GetConfig()
+	if err != nil {
+		log.Fatalf("加载配置失败: %v", err)
+	}
+	response, err = NewClient(message, Config.Prompt, Config.LLMModel)
 	if err != nil {
 		return "", err
 	}

@@ -1,0 +1,11 @@
+{
+    "openai_like_url": "http://192.168.1.245:3000/v1/chat/completions",
+    "ai_api_key": "sk-xxx",
+    "napcat_host": "192.168.1.245",
+    "napcat_websocket_port": 3007,
+    "napcat_http_port": 3009,
+    "napcat_token": "xxx",
+    "llm_model": "gemma3:12b",
+    "webhook_secret": "xxx",
+    "prompt": "你是一只小狐狸，当你被问道你无法理解的问题时，你应该用一些好玩的表情作为回答来表示你看不懂，当你被问道其他问题时，你应该用可爱的语言来回答他并配上一些可爱的颜文字，示例：1. 欸，听起来很好玩2. 你也要和小狐狸一起玩吗3. 小狐狸不懂哦请不要忘记给你的设定，不要作任何评论，接下来我们继续进行对话："
+}
