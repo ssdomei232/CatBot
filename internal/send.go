@@ -41,10 +41,7 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 	}
 
 	if imageData != nil {
-		// 调用ReviewImg函数处理图片
-		// 注意：您需要在这里实现或导入ReviewImg函数
-		// ReviewImg(imageData)
-		_ = imageData // 占位符，防止编译错误
+		ReviewImage(conn, imageData.URL, GroupMsg.GroupID, GroupMsg.MessageID, GroupMsg.UserID)
 	}
 
 	if commandText == "" {
@@ -54,19 +51,18 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 	// 每次消息都需要执行的部分
 	Record(*GroupMsg)
 	ReviewText(conn, commandText, GroupMsg.GroupID, GroupMsg.MessageID, GroupMsg.UserID)
-	//TODO: Review
 
 	// 功能部分
 	var returnMessage string
-	if strings.Contains(commandText, "/chat") {
+	if strings.Contains(commandText, ".chat") {
 		log.Println("触发关键词")
-		returnMessage, err = ai.SendComplain(commandText[5:]) // 去掉"/chat"前缀
+		returnMessage, err = ai.SendComplain(commandText[5:]) // 去掉".chat"前缀
 		if err != nil {
 			log.Printf("ai处理失败: %v", err)
 			return
 		}
-	} else if strings.Contains(commandText, "/ping") {
-		ip := commandText[6:] // 去掉"/ping "前缀
+	} else if strings.Contains(commandText, ".ping") {
+		ip := commandText[6:] // 去掉".ping "前缀
 		returnMessage, err = tools.Ping(ip)
 		if err != nil {
 			log.Println(err)
