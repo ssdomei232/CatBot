@@ -58,6 +58,9 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 			log.Printf("ai处理失败: %v", err)
 			return
 		}
+		if review.ReviewText(returnMessage) {
+			return
+		}
 	} else if strings.Contains(commandText, ".ping") {
 		ip := commandText[6:] // 去掉".ping "前缀
 		returnMessage, err = tools.Ping(ip)
@@ -65,6 +68,10 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 			log.Println(err)
 			returnMessage = fmt.Sprintf("Ping失败:%s", err)
 		}
+	} else if strings.Contains(commandText, ".nc") {
+		returnMessage = "你猜"
+	} else if strings.Contains(commandText, "xmsl") {
+		returnMessage = "羡慕死了"
 	}
 
 	sendMessage, err := napcat.Marshal("send_group_msg", fmt.Sprint(GroupMsg.GroupID), "text", returnMessage)

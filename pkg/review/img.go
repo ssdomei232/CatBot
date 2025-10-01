@@ -25,7 +25,7 @@ type ImageReviewInfo struct {
 }
 
 const (
-	maxFileSize = 10 << 20 // 最大支持10MB
+	maxFileSize = 10 << 30 // 最大支持10GB
 	cacheDir    = "cache"
 )
 
