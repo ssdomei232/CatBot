@@ -21,25 +21,52 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 	if err != nil {
 		return
 	}
-	if len(GroupMsg.Message) == 0 || GroupMsg.Message[0].Data.Text == "" {
+
+	// 解析消息项
+	messageItems, err := GroupMsg.GetMessageItems()
+	if err != nil || len(messageItems) == 0 {
+		return
+	}
+
+	// 查找第一个文本消息作为命令输入
+	var commandText string
+	var imageData *napcat.ImageData
+	for _, item := range messageItems {
+		if textData, ok := item.Data.(napcat.TextData); ok && commandText == "" {
+			commandText = textData.Text
+		}
+		if imgData, ok := item.Data.(napcat.ImageData); ok && imageData == nil {
+			imageData = &imgData
+		}
+	}
+
+	if imageData != nil {
+		// 调用ReviewImg函数处理图片
+		// 注意：您需要在这里实现或导入ReviewImg函数
+		// ReviewImg(imageData)
+		_ = imageData // 占位符，防止编译错误
+	}
+
+	if commandText == "" {
 		return
 	}
 
 	// 每次消息都需要执行的部分
 	Record(*GroupMsg)
-	//TODO: Record & Review
+	ReviewText(conn, commandText, GroupMsg.GroupID, GroupMsg.MessageID, GroupMsg.UserID)
+	//TODO: Review
 
 	// 功能部分
 	var returnMessage string
-	if strings.Contains(GroupMsg.Message[0].Data.Text, "/chat") {
+	if strings.Contains(commandText, "/chat") {
 		log.Println("触发关键词")
-		returnMessage, err = ai.SendComplain(GroupMsg.Message[0].Data.Text[5:])
+		returnMessage, err = ai.SendComplain(commandText[5:]) // 去掉"/chat"前缀
 		if err != nil {
 			log.Printf("ai处理失败: %v", err)
 			return
 		}
-	} else if strings.Contains(GroupMsg.Message[0].Data.Text, "/ping") {
-		ip := GroupMsg.Message[0].Data.Text[6:]
+	} else if strings.Contains(commandText, "/ping") {
+		ip := commandText[6:] // 去掉"/ping "前缀
 		returnMessage, err = tools.Ping(ip)
 		if err != nil {
 			log.Println(err)

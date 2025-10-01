@@ -2,6 +2,22 @@ package napcat
 
 import "encoding/json"
 
+type ImageData struct {
+	File     string `json:"file"`
+	SubType  int    `json:"sub_type"`
+	URL      string `json:"url"`
+	FileSize string `json:"file_size"`
+}
+
+type TextData struct {
+	Text string `json:"text"`
+}
+
+type MessageItem struct {
+	Type string `json:"type"`
+	Data any    `json:"data"`
+}
+
 type Message struct {
 	SelfID      int    `json:"self_id"`      // 机器人qq号
 	UserID      int    `json:"user_id"`      // 发送者qq号
@@ -15,10 +31,8 @@ type Message struct {
 	Font        int    `json:"font"`
 	SubType     string `json:"sub_type"`
 	Message     []struct {
-		Type string `json:"type"`
-		Data struct {
-			Text string `json:"text"`
-		} `json:"data"`
+		Type string          `json:"type"`
+		Data json.RawMessage `json:"data"`
 	} `json:"message"`
 	MessageFormat string `json:"message_format"`
 	PostType      string `json:"post_type"`
@@ -40,4 +54,37 @@ func Parse(message []byte) (*Message, error) {
 		return nil, err
 	}
 	return &msg, nil
+}
+
+// GetMessageItems 解析消息数组中的各项内容
+func (m *Message) GetMessageItems() ([]MessageItem, error) {
+	var items []MessageItem
+
+	for _, item := range m.Message {
+		msgItem := MessageItem{
+			Type: item.Type,
+		}
+
+		switch item.Type {
+		case "image":
+			var imageData ImageData
+			if err := json.Unmarshal(item.Data, &imageData); err != nil {
+				return nil, err
+			}
+			msgItem.Data = imageData
+		case "text":
+			var textData TextData
+			if err := json.Unmarshal(item.Data, &textData); err != nil {
+				return nil, err
+			}
+			msgItem.Data = textData
+		default:
+			// 对于未知类型，保持原始数据
+			msgItem.Data = item.Data
+		}
+
+		items = append(items, msgItem)
+	}
+
+	return items, nil
 }
