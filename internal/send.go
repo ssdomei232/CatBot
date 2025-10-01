@@ -30,18 +30,13 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 
 	// 查找第一个文本消息作为命令输入
 	var commandText string
-	var imageData *napcat.ImageData
 	for _, item := range messageItems {
 		if textData, ok := item.Data.(napcat.TextData); ok && commandText == "" {
 			commandText = textData.Text
 		}
-		if imgData, ok := item.Data.(napcat.ImageData); ok && imageData == nil {
-			imageData = &imgData
+		if imgData, ok := item.Data.(napcat.ImageData); ok {
+			ReviewImage(conn, imgData.URL, GroupMsg.GroupID, GroupMsg.MessageID, GroupMsg.UserID)
 		}
-	}
-
-	if imageData != nil {
-		ReviewImage(conn, imageData.URL, GroupMsg.GroupID, GroupMsg.MessageID, GroupMsg.UserID)
 	}
 
 	if commandText == "" {
