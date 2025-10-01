@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"log"
 
+	"git.mmeiblog.cn/mei/CatBot/configs"
 	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
 	"git.mmeiblog.cn/mei/CatBot/pkg/review"
 	"github.com/gorilla/websocket"
 )
 
 func ReviewText(conn *websocket.Conn, message string, groupid int, messageId int, qqNumber int) {
-	if groupid != 726833553 && groupid != 945592981 && groupid != 383069947 && groupid != 1030952595 {
+	if !isAdminGroup(groupid) {
 		return
 	}
 	if isBadMessage := review.ReviewText(message); isBadMessage {
@@ -33,7 +34,7 @@ func ReviewText(conn *websocket.Conn, message string, groupid int, messageId int
 }
 
 func ReviewImage(conn *websocket.Conn, imgUrl string, groupid int, messageId int, qqNumber int) {
-	if groupid != 726833553 && groupid != 945592981 && groupid != 383069947 && groupid != 1030952595 {
+	if !isAdminGroup(groupid) {
 		return
 	}
 	if isBadMessage, err := review.ReviewImage(imgUrl); isBadMessage {
@@ -57,4 +58,18 @@ func ReviewImage(conn *websocket.Conn, imgUrl string, groupid int, messageId int
 			log.Printf("发送响应失败: %v", err)
 		}
 	}
+}
+
+func isAdminGroup(groupId int) bool {
+	Config, err := configs.GetConfig()
+	if err != nil {
+		log.Fatalf("加载配置失败: %v", err)
+	}
+
+	for _, value := range Config.AdminGroups {
+		if value == groupId {
+			return true
+		}
+	}
+	return false
 }

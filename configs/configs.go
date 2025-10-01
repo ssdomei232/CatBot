@@ -15,6 +15,7 @@ type Configs struct {
 	NapcatHttpPort      int    `json:"napcat_http_port"`
 	WebhookSecret       string `json:"webhook_secret"`
 	NsfwApiUrl          string `json:"nsfw_api_url"`
+	AdminGroups         []int  `json:"admin_groups"`
 	Prompt              string `json:"prompt"`
 }
 
