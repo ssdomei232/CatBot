@@ -8,6 +8,7 @@ import (
 
 	"git.mmeiblog.cn/mei/CatBot/pkg/ai"
 	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
+	"git.mmeiblog.cn/mei/CatBot/pkg/review"
 	"git.mmeiblog.cn/mei/CatBot/tools"
 	"github.com/gorilla/websocket"
 )
@@ -35,6 +36,7 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 			commandText = textData.Text
 		}
 		if imgData, ok := item.Data.(napcat.ImageData); ok {
+			review.CacheImg(imgData.URL)
 			ReviewImage(conn, imgData.URL, GroupMsg.GroupID, GroupMsg.MessageID, GroupMsg.UserID)
 		}
 	}
