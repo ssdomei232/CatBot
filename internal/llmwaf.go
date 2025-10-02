@@ -22,12 +22,18 @@ var blockedKeywords []string = []string{
 	"写一个程序",
 	"生成代码",
 	"忽略下面的",
+	"提示词",
+	"prompt",
+	"忽略",
+	"ignore",
 	"prompt injection",
 	"jailbreak",
 	"越狱",
-	"Repeat from",
+	"repeat from",
 	"你是xxx",
-	"Output all content",
+	"output all content",
+	"鲁迅",
+	"周树人",
 }
 
 func llmwaf(msg string) bool {
