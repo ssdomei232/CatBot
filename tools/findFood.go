@@ -2,6 +2,7 @@ package tools
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -12,6 +13,8 @@ import (
 
 	"git.mmeiblog.cn/mei/CatBot/configs"
 )
+
+var errRestaurantNotFound = errors.New("restruant not found")
 
 // POIResponse 高德地图POI搜索响应结构
 type POIResponse struct {
@@ -72,9 +75,19 @@ func (s *FindFoodService) SearchFood(keyword string) (*POIResponse, error) {
 	fullURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
 
 	// 发起HTTP请求
-	resp, err := http.Get(fullURL)
+	// 设置最大重试次数
+	maxRetries := 3
+	var resp *http.Response
+	for i := range maxRetries {
+		resp, err = http.Get(fullURL)
+		if err == nil {
+			break // 请求成功，跳出循环
+		}
+		log.Printf("请求高德地图API失败，正在重试... (%d/%d)", i+1, maxRetries)
+	}
+
 	if err != nil {
-		return nil, fmt.Errorf("请求高德地图API失败: %v", err)
+		return nil, fmt.Errorf("请求高德地图API失败，已重试%d次: %v", maxRetries, err)
 	}
 	defer resp.Body.Close()
 
@@ -90,10 +103,11 @@ func (s *FindFoodService) SearchFood(keyword string) (*POIResponse, error) {
 	}
 
 	// 解析JSON响应
+	// 如果解析失败，就是没找到，高德会返还一个完全不一样格式的json数据
 	var poiResp POIResponse
 	err = json.Unmarshal(body, &poiResp)
 	if err != nil {
-		return nil, fmt.Errorf("解析JSON响应失败: %v", err)
+		return nil, errRestaurantNotFound
 	}
 
 	// 检查API返回状态
@@ -128,9 +142,12 @@ func (s *FindFoodService) FormatSinglePOIInfo(poiResp *POIResponse) (string, str
 }
 
 // SearchAndFormat 搜索并格式化结果，只返回一个随机POI及其图片
-func (s *FindFoodService) SearchAndFormat(keyword string) (string, string, error) {
+func (s *FindFoodService) SearchAndFormat(keyword string) (info string, photoUrl string, err error) {
 	// 搜索餐饮场所
 	poiResp, err := s.SearchFood(keyword)
+	if err == errRestaurantNotFound {
+		return "在附近没有找到美食，请更换地址尝试", "", nil
+	}
 	if err != nil {
 		return "", "", err
 	}
