@@ -2,6 +2,18 @@
 
 一个 QQ 机器人，调用 napcat 的 websocket 接口
 
+## 功能
+
+| 功能 | 触发方式 |
+| --- | --- |
+| 获取天气 | .weather |
+| ping | .ping <addr> |
+| ai聊天 | .chat <聊天信息> |
+| 你猜 | .nc |
+| 羡慕死了 | xmsl |
+| 找吃的 | .findfood <地址> |
+| 查公交 | .bus <公交站点名> |
+
 ## `pkg/napcat`
 
 这个 package 封装了一些 napcat 的操作，具体用法可以看代码中的实现，比如：
