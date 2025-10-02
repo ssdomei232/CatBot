@@ -52,14 +52,17 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 	// 功能部分
 	var returnMessage string
 	if strings.Contains(commandText, ".chat") {
-		log.Println("触发关键词")
-		returnMessage, err = ai.SendComplain(commandText[5:]) // 去掉".chat"前缀
-		if err != nil {
-			log.Printf("ai处理失败: %v", err)
-			return
-		}
-		if review.ReviewText(returnMessage) {
-			return
+		if promptWaf(commandText) {
+			returnMessage = "消息被 Prompt WAF 拦截"
+		} else {
+			returnMessage, err = ai.SendComplain(commandText[5:]) // 去掉".chat"前缀
+			if err != nil {
+				log.Printf("ai处理失败: %v", err)
+				return
+			}
+			if llmwaf(returnMessage) {
+				returnMessage = "消息被 LLM WAF 拦截"
+			}
 		}
 	} else if strings.Contains(commandText, ".ping") {
 		ip := commandText[6:] // 去掉".ping "前缀

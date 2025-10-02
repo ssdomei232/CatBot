@@ -44,8 +44,8 @@ func ReviewImage(conn *websocket.Conn, imgUrl string, groupid int, messageId int
 			conn.WriteMessage(websocket.TextMessage, replyMsg)
 		}
 		deleteMsg, _ := napcat.MarshalDeleteMessage(messageId)
-		banMsg, _ := napcat.MarshalGroupBan(groupid, qqNumber, 600)
-		replyMsg, _ := napcat.MarshalAtMsg(groupid, qqNumber, " 您发送的图片中含有违规内容，禁言十分钟")
+		banMsg, _ := napcat.MarshalGroupBan(groupid, qqNumber, 60)
+		replyMsg, _ := napcat.MarshalAtMsg(groupid, qqNumber, " 您发送的图片中含有违规内容，禁言一分钟")
 		writeMutex.Lock()
 		defer writeMutex.Unlock()
 		if err := conn.WriteMessage(websocket.TextMessage, deleteMsg); err != nil {
