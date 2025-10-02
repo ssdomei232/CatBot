@@ -72,6 +72,17 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 		returnMessage = "你猜"
 	} else if strings.Contains(commandText, "xmsl") {
 		returnMessage = "羡慕死了"
+	} else if strings.Contains(commandText, "杜奕") || strings.Contains(commandText, "杜伊") || strings.Contains(commandText, "喵") {
+		returnMessage = "👀"
+	} else if strings.Contains(commandText, ".help") {
+		returnMessage = "https://github.com/ssdomei232/CatBot"
+	} else if strings.Contains(commandText, ".weather") {
+		returnMessage = tools.GetWeather()
+	} else if strings.Contains(commandText, ".findfood") {
+		go findfood(conn, commandText[10:], GroupMsg.GroupID)
+		returnMessage = "正在搜索..."
+	} else if strings.Contains(commandText, ".bus") {
+		returnMessage = tools.FindBus(commandText[5:])
 	}
 
 	sendMessage, err := napcat.Marshal("send_group_msg", fmt.Sprint(GroupMsg.GroupID), "text", returnMessage)

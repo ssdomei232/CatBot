@@ -16,6 +16,9 @@ type Configs struct {
 	WebhookSecret       string `json:"webhook_secret"`
 	NsfwApiUrl          string `json:"nsfw_api_url"`
 	AdminGroups         []int  `json:"admin_groups"`
+	GDKey               string `json:"gd_key"`
+	CityABCode          int    `json:"city_abcode"`
+	CityName            string `json:"city_name"`
 	Prompt              string `json:"prompt"`
 }
 
