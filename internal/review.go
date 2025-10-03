@@ -16,8 +16,8 @@ func ReviewText(conn *websocket.Conn, message string, groupid int, messageId int
 	}
 	if isBadMessage := review.ReviewText(message); isBadMessage {
 		deleteMsg, _ := napcat.MarshalDeleteMessage(messageId)
-		banMsg, _ := napcat.MarshalGroupBan(groupid, qqNumber, 600)
-		replyMsg, _ := napcat.MarshalAtMsg(groupid, qqNumber, " 您的消息被检测到违规内容，禁言十分钟")
+		banMsg, _ := napcat.MarshalGroupBan(groupid, qqNumber, 60)
+		replyMsg, _ := napcat.MarshalAtMsg(groupid, qqNumber, " 您的消息被检测到违规内容，禁言一分钟")
 
 		writeMutex.Lock()
 		defer writeMutex.Unlock()

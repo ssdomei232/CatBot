@@ -29,7 +29,7 @@ func main() {
 	}()
 
 	r := gin.Default()
-	r.GET("/webhook", internal.HandleWebhook)
+	r.POST("/webhook", internal.HandleWebhook)
 
 	if err := r.Run(":8085"); err != nil {
 		log.Fatalf("Gin服务器启动失败: %v", err)

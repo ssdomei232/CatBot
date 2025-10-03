@@ -37,7 +37,7 @@ func HandleWebhook(c *gin.Context) {
 		return
 	}
 
-	message := c.DefaultQuery("message", "")
+	message := c.DefaultPostForm("message", "")
 	if message == "" {
 		c.AbortWithStatusJSON(400, gin.H{
 			"code":    400,
@@ -46,7 +46,7 @@ func HandleWebhook(c *gin.Context) {
 		return
 	}
 
-	groupId := c.DefaultQuery("group_id", "")
+	groupId := c.DefaultPostForm("group_id", "")
 	if groupId == "" {
 		c.AbortWithStatusJSON(400, gin.H{
 			"code":    400,
