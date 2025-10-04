@@ -10,7 +10,7 @@ jobs:
       - name: Install node and curl
         run: |
           apk update
-          apk add --no-cache curl node
+          apk add --no-cache curl nodejs
 
       - name: Checkout code
         uses: actions/checkout@v3
