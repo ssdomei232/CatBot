@@ -7,6 +7,11 @@ jobs:
   build-and-release:
     runs-on: ubuntu-latest
     steps:
+      - name: Install Node and Curl
+        run: |
+          apk update
+          apk add --no-cache curl Node
+          
       - name: Checkout code
         uses: actions/checkout@v3
 

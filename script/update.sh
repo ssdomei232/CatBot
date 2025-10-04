@@ -9,7 +9,6 @@ timestamp=$(date +%s)
 input="1panel$clientToken$timestamp"
 token=$(echo -n "$input" | md5sum | awk '{print $1}')
 
-apk add curl 
 # delete file
 curl --location --request POST "$PANEL_URL/api/v2/files/del?operateNode=undefined" \
 -H "1Panel-Token: $token" \
