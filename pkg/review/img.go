@@ -70,6 +70,10 @@ func CacheImg(imgUrl string) (filename string, err error) {
 
 	// 构造目标文件名
 	hashName := fmt.Sprintf("%x", sha1.Sum([]byte(imgUrl+time.Now().String())))[:16]
+	ext := getFileExtension(contentType)
+	if ext != "" {
+		hashName = hashName + ext
+	}
 	filename = filepath.Join(cacheDir, hashName)
 
 	// 打开本地文件准备写入
@@ -101,6 +105,21 @@ func isImageMIME(mime string) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+func getFileExtension(contentType string) string {
+	switch contentType {
+	case "image/jpeg":
+		return ".jpg"
+	case "image/png":
+		return ".png"
+	case "image/gif":
+		return ".gif"
+	case "image/webp":
+		return ".webp"
+	default:
+		return ""
 	}
 }
 
