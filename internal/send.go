@@ -42,13 +42,14 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 		}
 	}
 
+	// 原神拦截器
 	if strings.Contains(GroupMsg.RawMessage, "gamecenter.qq.com") {
 		returnMessage = "以上消息存在欺诈行为，请勿相信"
 	}
 
 	// 每次消息都需要执行的部分
 	Record(*GroupMsg)
-	ReviewText(conn, commandText, GroupMsg.GroupID, GroupMsg.MessageID, GroupMsg.UserID)
+	ReviewText(conn, GroupMsg.RawMessage, GroupMsg.GroupID, GroupMsg.MessageID, GroupMsg.UserID)
 
 	// 功能部分
 	if strings.Contains(commandText, ".chat") {
