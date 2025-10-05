@@ -91,6 +91,8 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 	} else if strings.Contains(commandText, ".zanwo") {
 		sendLike(conn, GroupMsg.GroupID, GroupMsg.UserID)
 		return
+	} else if strings.Contains(commandText, "wcnm") || strings.Contains(commandText, "cnmd") {
+		returnMessage = "中国国家导弹防御系统"
 	}
 
 	sendMessage, err := napcat.Marshal("send_group_msg", fmt.Sprint(GroupMsg.GroupID), "text", returnMessage)
