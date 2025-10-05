@@ -91,8 +91,6 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 	} else if strings.Contains(commandText, ".zanwo") {
 		sendLike(conn, GroupMsg.GroupID, GroupMsg.UserID)
 		return
-	} else if strings.Contains(GroupMsg.RawMessage, "gamecenter.qq.com") {
-		returnMessage = "以上消息存在诈骗行为，请勿相信"
 	}
 
 	sendMessage, err := napcat.Marshal("send_group_msg", fmt.Sprint(GroupMsg.GroupID), "text", returnMessage)
