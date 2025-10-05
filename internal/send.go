@@ -44,7 +44,7 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 
 	// 原神拦截器
 	if strings.Contains(GroupMsg.RawMessage, "gamecenter.qq.com") {
-		returnMessage = "以上消息存在欺诈行为，请勿相信"
+		returnMessage = "以上消息存在欺诈行为(点击可能会下载某种'热门'游戏)，请勿相信"
 	}
 
 	// 每次消息都需要执行的部分
