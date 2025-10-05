@@ -43,7 +43,7 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 	}
 
 	if strings.Contains(GroupMsg.RawMessage, "gamecenter.qq.com") {
-		returnMessage = "以上消息存在诈骗行为，请勿相信"
+		returnMessage = "以上消息存在欺诈行为，请勿相信"
 	}
 
 	// 每次消息都需要执行的部分
