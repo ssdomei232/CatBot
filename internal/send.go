@@ -18,6 +18,7 @@ var writeMutex sync.Mutex
 func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 	var err error
 	var GroupMsg *napcat.Message
+	var returnMessage string
 	GroupMsg, err = napcat.Parse(message)
 	if err != nil {
 		return
@@ -41,8 +42,8 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 		}
 	}
 
-	if commandText == "" {
-		return
+	if strings.Contains(GroupMsg.RawMessage, "gamecenter.qq.com") {
+		returnMessage = "以上消息存在诈骗行为，请勿相信"
 	}
 
 	// 每次消息都需要执行的部分
@@ -50,7 +51,6 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 	ReviewText(conn, commandText, GroupMsg.GroupID, GroupMsg.MessageID, GroupMsg.UserID)
 
 	// 功能部分
-	var returnMessage string
 	if strings.Contains(commandText, ".chat") {
 		if promptWaf(commandText) {
 			returnMessage = "消息被 Prompt WAF 拦截"
