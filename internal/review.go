@@ -34,7 +34,7 @@ func ReviewText(conn *websocket.Conn, message string, groupid int, messageId int
 }
 
 func ReviewImage(conn *websocket.Conn, imgUrl string, groupid int, messageId int, qqNumber int) {
-	if !isAdminGroup(groupid) {
+	if !isAdminGroup(groupid) && qqNumber != 3979567422 {
 		return
 	}
 	if isBadMessage, err := review.ReviewImage(imgUrl); isBadMessage {
