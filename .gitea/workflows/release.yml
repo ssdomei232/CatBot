@@ -7,7 +7,7 @@ jobs:
   build-and-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Install node and curl
+      - name: Install node
         run: |
           apk update
           apk add --no-cache nodejs

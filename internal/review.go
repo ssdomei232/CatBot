@@ -11,7 +11,7 @@ import (
 )
 
 func ReviewText(conn *websocket.Conn, message string, groupid int, messageId int, qqNumber int) {
-	if !isAdminGroup(groupid) {
+	if !isAdminGroup(groupid) && qqNumber != 3979567422 {
 		return
 	}
 	if isBadMessage := review.ReviewText(message); isBadMessage {
