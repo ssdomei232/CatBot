@@ -93,6 +93,14 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 		return
 	} else if strings.Contains(commandText, "wcnm") || strings.Contains(commandText, "cnmd") {
 		returnMessage = "中国国家导弹防御系统"
+	} else if strings.Contains(commandText, ".tp") {
+		rconMsg, err := sendRconCmd(commandText[4:])
+		if err != nil {
+			log.Printf("RCON执行命令失败: %v", err)
+			returnMessage = "RCON执行命令失败"
+		} else {
+			returnMessage = rconMsg
+		}
 	}
 
 	sendMessage, err := napcat.Marshal("send_group_msg", fmt.Sprint(GroupMsg.GroupID), "text", returnMessage)
