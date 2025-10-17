@@ -8,11 +8,33 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+var messageQueue = make(chan napcat.Message, 1000)
+
+func init() {
+	go processMessages()
+}
+
+func processMessages() {
+	for message := range messageQueue {
+		recordMessage(message)
+	}
+}
+
 func Record(groupMessage napcat.Message) {
-	db, err := sql.Open("sqlite", "history.db")
+	select {
+	case messageQueue <- groupMessage:
+	default:
+		log.Println("消息队列已满，丢弃消息")
+	}
+}
+
+func recordMessage(groupMessage napcat.Message) {
+	db, err := sql.Open("sqlite", "history.db?cache=shared&mode=rwc&_journal_mode=WAL&_busy_timeout=5000")
 	if err != nil {
 		log.Fatalf("打开数据库失败:%s", err)
 	}
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(5)
 	defer db.Close()
 
 	// 查询该用户是否存在于数据库中
