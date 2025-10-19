@@ -101,11 +101,13 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 		} else {
 			returnMessage = rconMsg
 		}
-	} else if strings.Contains(commandText, ".terperature") {
-		returnMessage, err = GetTemperature()
+	} else if strings.Contains(commandText, ".temperature") {
+		temperature, err := GetTemperature()
 		if err != nil {
 			log.Printf("获取温度失败: %v", err)
 			returnMessage = "获取温度失败"
+		} else {
+			returnMessage = fmt.Sprintf("当前室外温度为: %s", temperature)
 		}
 	}
 

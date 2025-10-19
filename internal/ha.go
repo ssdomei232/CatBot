@@ -16,7 +16,7 @@ func getHAClient() (client *ha.Client, err error) {
 		return nil, err
 	}
 
-	client = ha.NewClient(ha.ClientConfig{Token: config.HAConfig.Token, Host: config.HAConfig.Token}, &http.Client{
+	client = ha.NewClient(ha.ClientConfig{Host: config.HAConfig.Host, Token: config.HAConfig.Token}, &http.Client{
 		Timeout: 30 * time.Second,
 	})
 
@@ -28,7 +28,7 @@ func getHAClient() (client *ha.Client, err error) {
 }
 
 // 获取温度
-func GetTemperature() (terperaturn string, err error) {
+func GetTemperature() (temperaturn string, err error) {
 	client, err := getHAClient()
 	if err != nil {
 		return "", err
