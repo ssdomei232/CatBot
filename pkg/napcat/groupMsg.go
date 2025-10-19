@@ -2,6 +2,7 @@ package napcat
 
 import (
 	"encoding/json"
+	"errors"
 )
 
 const (
@@ -79,19 +80,27 @@ type GroupReplyMsgData struct {
 
 // 编码群文本消息
 func MarshalGroupTextMsg(groupID int, text string) ([]byte, error) {
-	Msg := WSMsg{
+	if groupID <= 0 {
+		return nil, errors.New("invalid groupID")
+	}
+
+	msg := WSMsg{
 		Action: ActionSendGroupMsg,
 		Params: GroupTextMsgParams{
 			GroupID: groupID,
 			Message: text,
 		},
 	}
-	return json.Marshal(Msg)
+	return json.Marshal(msg)
 }
 
 // 编码群@消息
 func MarshalAtMsg(groupID int, qq int, text string) ([]byte, error) {
-	Msg := WSMsg{
+	if groupID <= 0 {
+		return nil, errors.New("invalid groupID")
+	}
+
+	msg := WSMsg{
 		Action: ActionSendGroupMsg,
 		Params: GroupMsgParams{
 			GroupID: groupID,
@@ -108,12 +117,17 @@ func MarshalAtMsg(groupID int, qq int, text string) ([]byte, error) {
 		},
 	}
 
-	return json.Marshal(Msg)
+	return json.Marshal(msg)
 }
 
 // 编码群语音消息
+// path 可以是 url或本地路径
 func MarshalGroupAudioMsg(groupID int, path string) ([]byte, error) {
-	Msg := WSMsg{
+	if groupID <= 0 || path == "" {
+		return nil, errors.New("invalid groupID or empty path")
+	}
+
+	msg := WSMsg{
 		Action: ActionSendGroupMsg,
 		Params: GroupMsgParams{
 			GroupID: groupID,
@@ -126,12 +140,17 @@ func MarshalGroupAudioMsg(groupID int, path string) ([]byte, error) {
 		},
 	}
 
-	return json.Marshal(Msg)
+	return json.Marshal(msg)
 }
 
 // 编码群视频消息
+// path 可以是 url或本地路径
 func MarshalGroupVideoMsg(groupID int, path string) ([]byte, error) {
-	Msg := WSMsg{
+	if groupID <= 0 || path == "" {
+		return nil, errors.New("invalid groupID or empty path")
+	}
+
+	msg := WSMsg{
 		Action: ActionSendGroupMsg,
 		Params: GroupMsgParams{
 			GroupID: groupID,
@@ -144,12 +163,17 @@ func MarshalGroupVideoMsg(groupID int, path string) ([]byte, error) {
 		},
 	}
 
-	return json.Marshal(Msg)
+	return json.Marshal(msg)
 }
 
 // 编码群图片消息
-func MarshalGroupImgMsg(groupID int, imgUrl string) ([]byte, error) {
-	Msg := WSMsg{
+// path 可以是 url或本地路径
+func MarshalGroupImgMsg(groupID int, path string) ([]byte, error) {
+	if groupID <= 0 || path == "" {
+		return nil, errors.New("invalid groupID or empty image URL")
+	}
+
+	msg := WSMsg{
 		Action: ActionSendGroupMsg,
 		Params: GroupMsgParams{
 			GroupID: groupID,
@@ -157,26 +181,31 @@ func MarshalGroupImgMsg(groupID int, imgUrl string) ([]byte, error) {
 				{
 					Type: "image",
 					Data: GroupImgMsgData{
-						File:    imgUrl,
+						File:    path,
 						Summary: "[图片]",
 					},
 				},
 			},
 		},
 	}
-	return json.Marshal(Msg)
+	return json.Marshal(msg)
 }
 
 // 编码群文件消息
 // name是文件名
+// path 可以是 url或本地路径
 func MarshalGroupFileMsg(groupID int, path string, name string) ([]byte, error) {
-	Msg := WSMsg{
+	if groupID <= 0 || path == "" || name == "" {
+		return nil, errors.New("invalid groupID, empty path or name")
+	}
+
+	msg := WSMsg{
 		Action: ActionSendGroupMsg,
 		Params: GroupMsgParams{
 			GroupID: groupID,
 			Message: []GroupMsgSegment{
 				{
-					Type: "image",
+					Type: TypeFile,
 					Data: GroupFileMsgData{
 						File: path,
 						Name: name,
@@ -185,13 +214,17 @@ func MarshalGroupFileMsg(groupID int, path string, name string) ([]byte, error) 
 			},
 		},
 	}
-	return json.Marshal(Msg)
+	return json.Marshal(msg)
 }
 
 // 编码群表情消息
 // faceid参考: https://bot.q.qq.com/wiki/develop/api-v2/openapi/emoji/model.html#EmojiType
 func MarshalGroupFaceMsg(groupID int, faceID int) ([]byte, error) {
-	Msg := WSMsg{
+	if groupID <= 0 {
+		return nil, errors.New("invalid groupID face ID")
+	}
+
+	msg := WSMsg{
 		Action: ActionSendGroupMsg,
 		Params: GroupMsgParams{
 			GroupID: groupID,
@@ -205,13 +238,17 @@ func MarshalGroupFaceMsg(groupID int, faceID int) ([]byte, error) {
 			},
 		},
 	}
-	return json.Marshal(Msg)
+	return json.Marshal(msg)
 }
 
 // 编码群回复消息
 // messageID是回复的消息ID,text是回复的文本
 func MarshalGroupReplyMsg(groupID int, messageID int, text string) ([]byte, error) {
-	Msg := WSMsg{
+	if groupID <= 0 || messageID <= 0 {
+		return nil, errors.New("invalid groupID, messageID")
+	}
+
+	msg := WSMsg{
 		Action: ActionSendGroupMsg,
 		Params: GroupMsgParams{
 			GroupID: groupID,
@@ -231,5 +268,5 @@ func MarshalGroupReplyMsg(groupID int, messageID int, text string) ([]byte, erro
 			},
 		},
 	}
-	return json.Marshal(Msg)
+	return json.Marshal(msg)
 }
