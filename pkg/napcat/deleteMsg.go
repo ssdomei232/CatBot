@@ -6,6 +6,7 @@ type DeleteMsgParams struct {
 	MessageId int `json:"message_id"`
 }
 
+// 编码撤回消息
 func MarshalDeleteMessage(messageID int) ([]byte, error) {
 	message := WSMsg{
 		Action: "delete_msg",

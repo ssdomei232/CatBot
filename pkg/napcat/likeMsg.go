@@ -7,6 +7,7 @@ type LikeMsgParams struct {
 	Times  int `json:"times"`
 }
 
+// 编码点赞消息
 func MarshalLikeMsg(userId int, times int) ([]byte, error) {
 	likeMsg := WSMsg{
 		Action: "send_like",

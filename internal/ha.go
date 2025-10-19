@@ -9,7 +9,8 @@ import (
 	ha "github.com/mkelcik/go-ha-client"
 )
 
-// 获取 HA Client
+// 获取 Home Assistant Client
+// https://developers.home-assistant.io/docs/api/rest/
 func getHAClient() (client *ha.Client, err error) {
 	config, err := configs.GetConfig()
 	if err != nil {

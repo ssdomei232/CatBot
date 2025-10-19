@@ -8,6 +8,7 @@ type GroupBanParams struct {
 	Duration int `json:"duration"`
 }
 
+// 编码群禁言消息
 func MarshalGroupBan(groupID int, userID int, duration int) ([]byte, error) {
 	message := WSMsg{
 		Action: "set_group_ban",

@@ -119,7 +119,7 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 
 	writeMutex.Lock()
 	defer writeMutex.Unlock()
-	if err = conn.WriteMessage(websocket.TextMessage, sendMessage); err != nil {
+	if err = napcat.SendMsg(conn, sendMessage); err != nil {
 		log.Printf("发送响应失败: %v", err)
 	}
 }

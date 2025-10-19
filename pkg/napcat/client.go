@@ -36,7 +36,7 @@ func (c *Client) Start(handler MessageHandler) {
 	for {
 		conn, _, err := websocket.DefaultDialer.Dial(c.url, nil)
 		if err != nil {
-			log.Printf("连接失败: %v，%v后重试...", err, c.retryDelay)
+			log.Printf("连接失败: %v,%v后重试...", err, c.retryDelay)
 			time.Sleep(c.retryDelay)
 			continue
 		}
@@ -44,7 +44,7 @@ func (c *Client) Start(handler MessageHandler) {
 		for {
 			messageType, message, err := conn.ReadMessage()
 			if err != nil {
-				log.Printf("连接断开: %v，尝试重连...", err)
+				log.Printf("连接断开: %v,尝试重连...", err)
 				conn.Close()
 				break
 			}
