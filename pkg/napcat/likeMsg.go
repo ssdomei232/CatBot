@@ -2,16 +2,13 @@ package napcat
 
 import "encoding/json"
 
-type LikeMsg struct {
-	Action string `json:"action"`
-	Params struct {
-		UserId int `json:"user_id"`
-		Times  int `json:"times"`
-	} `json:"params"`
+type LikeMsgParams struct {
+	UserID int `json:"user_id"`
+	Times  int `json:"times"`
 }
 
 func MarshalLikeMsg(userId int, times int) ([]byte, error) {
-	likeMsg := LikeMsg{
+	likeMsg := WSMsg{
 		Action: "send_like",
 		Params: struct {
 			UserId int `json:"user_id"`

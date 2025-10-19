@@ -2,7 +2,6 @@ package internal
 
 import (
 	"log"
-	"strconv"
 
 	"git.mmeiblog.cn/mei/CatBot/configs"
 	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
@@ -21,7 +20,7 @@ func findfood(conn *websocket.Conn, poi string, groupId int) {
 		log.Printf("搜索失败: %v\n", err)
 		return
 	}
-	sendMessage, _ := napcat.Marshal("send_group_msg", strconv.Itoa(groupId), "text", info)
+	sendMessage, _ := napcat.MarshalGroupTextMsg(groupId, info)
 	sendImgMsg, err := napcat.MarshalGroupImgMsg(groupId, photoURL)
 
 	writeMutex.Lock()

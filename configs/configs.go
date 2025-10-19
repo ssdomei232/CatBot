@@ -20,6 +20,7 @@ type Configs struct {
 	CityABCode          int       `json:"city_abcode"`
 	CityName            string    `json:"city_name"`
 	MCSConfig           MCSConfig `json:"mcs_config"`
+	HAConfig            HAConfig  `json:"ha_config"`
 	Prompt              string    `json:"prompt"`
 }
 
@@ -27,6 +28,11 @@ type MCSConfig struct {
 	Host     string `json:"host"`
 	Port     int    `json:"port"`
 	Password string `json:"password"`
+}
+
+type HAConfig struct {
+	Host  string `json:"host"`
+	Token string `json:"token"`
 }
 
 func GetConfig() (config Configs, err error) {

@@ -2,19 +2,14 @@ package napcat
 
 import "encoding/json"
 
-type DeleteMessage struct {
-	Action string `json:"action"`
-	Params struct {
-		MessageId int `json:"message_id"`
-	} `json:"params"`
+type DeleteMsgParams struct {
+	MessageId int `json:"message_id"`
 }
 
 func MarshalDeleteMessage(messageID int) ([]byte, error) {
-	message := DeleteMessage{
+	message := WSMsg{
 		Action: "delete_msg",
-		Params: struct {
-			MessageId int `json:"message_id"`
-		}{MessageId: messageID},
+		Params: DeleteMsgParams{MessageId: messageID},
 	}
 	return json.Marshal(message)
 }

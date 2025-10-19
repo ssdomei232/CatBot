@@ -101,9 +101,15 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 		} else {
 			returnMessage = rconMsg
 		}
+	} else if strings.Contains(commandText, ".terperature") {
+		returnMessage, err = GetTemperature()
+		if err != nil {
+			log.Printf("获取温度失败: %v", err)
+			returnMessage = "获取温度失败"
+		}
 	}
 
-	sendMessage, err := napcat.Marshal("send_group_msg", fmt.Sprint(GroupMsg.GroupID), "text", returnMessage)
+	sendMessage, err := napcat.MarshalGroupTextMsg(GroupMsg.GroupID, returnMessage)
 	if err != nil {
 		log.Printf("生成群组消息失败: %v", err)
 		return

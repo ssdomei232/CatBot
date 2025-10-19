@@ -7,6 +7,7 @@ require (
 	github.com/go-ping/ping v1.2.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/kirklin/go-swd v0.0.3
+	github.com/mkelcik/go-ha-client v1.0.0
 	modernc.org/sqlite v1.39.0
 )
 
