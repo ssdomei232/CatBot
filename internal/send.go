@@ -107,7 +107,7 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 			log.Printf("获取温度失败: %v", err)
 			returnMessage = "获取温度失败"
 		} else {
-			returnMessage = fmt.Sprintf("当前室外温度为: %s", temperature)
+			returnMessage = fmt.Sprintf("当前室外温度为: %s°C", temperature)
 		}
 	}
 
