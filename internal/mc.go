@@ -39,7 +39,7 @@ func sendRconWhiteCmd(arg string) (Msg string, err error) {
 		log.Fatalf("RCON连接失败: %v", err)
 		return "", err
 	}
-	cmd := fmt.Sprintf("tp %s", arg)
+	cmd := fmt.Sprintf("whitelist add %s", arg)
 	Msg, err = rcon.Execute(cmd)
 	if err != nil {
 		log.Fatalf("RCON执行命令失败: %v", err)
