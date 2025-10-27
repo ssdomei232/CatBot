@@ -101,6 +101,14 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 		} else {
 			returnMessage = rconMsg
 		}
+	} else if strings.Contains(commandText, ".white") {
+		_, err := sendRconCmd(commandText[7:])
+		if err != nil {
+			log.Printf("Add to White List faild: %v", err)
+			returnMessage = "Add to White List faild"
+		} else {
+			returnMessage = "Add to White List succeed"
+		}
 	} else if strings.Contains(commandText, ".temperature") {
 		temperature, err := GetTemperature()
 		if err != nil {

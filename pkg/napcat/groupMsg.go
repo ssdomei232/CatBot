@@ -15,6 +15,7 @@ const (
 	TypeVideo          = "video"
 	TypeFace           = "face"
 	TypeReply          = "reply"
+	TypeMusic          = "music"
 )
 
 // Websocket 消息基本结构
@@ -76,6 +77,12 @@ type GroupFaceMsgData struct {
 // 群回复消息
 type GroupReplyMsgData struct {
 	ID int `json:"id"`
+}
+
+// 群音乐卡片消息
+type GroupMusicCardData struct {
+	Type string `json:"type"`
+	ID   string `json:"id"`
 }
 
 // 编码群文本消息
@@ -263,6 +270,30 @@ func MarshalGroupReplyMsg(groupID int, messageID int, text string) ([]byte, erro
 					Type: TypeText,
 					Data: GroupTextMsgData{
 						Text: text,
+					},
+				},
+			},
+		},
+	}
+	return json.Marshal(msg)
+}
+
+// 编码群音乐消息
+func MarshalGroupMusicMsg(groupID int, musicType string, musicID string) ([]byte, error) {
+	if groupID <= 0 || musicID == "" {
+		return nil, errors.New("invalid groupID, music ID")
+	}
+
+	msg := WSMsg{
+		Action: ActionSendGroupMsg,
+		Params: GroupMsgParams{
+			GroupID: groupID,
+			Message: []GroupMsgSegment{
+				{
+					Type: TypeMusic,
+					Data: GroupMusicCardData{
+						ID:   musicID,
+						Type: musicType,
 					},
 				},
 			},
