@@ -94,7 +94,7 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 	} else if strings.Contains(commandText, "wcnm") || strings.Contains(commandText, "cnmd") {
 		returnMessage = "中国国家导弹防御系统"
 	} else if strings.Contains(commandText, ".tp") {
-		rconMsg, err := sendRconCmd(commandText[4:])
+		rconMsg, err := sendRconTpCmd(commandText[4:])
 		if err != nil {
 			log.Printf("RCON执行命令失败: %v", err)
 			returnMessage = "RCON执行命令失败"
@@ -102,7 +102,7 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 			returnMessage = rconMsg
 		}
 	} else if strings.Contains(commandText, ".white") {
-		_, err := sendRconCmd(commandText[7:])
+		_, err := sendRconWhiteCmd(commandText[7:])
 		if err != nil {
 			log.Printf("Add to White List faild: %v", err)
 			returnMessage = "Add to White List faild"
