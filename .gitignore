@@ -25,3 +25,4 @@ config.json
 history.db
 CatBot
 cache
+history.db-journal

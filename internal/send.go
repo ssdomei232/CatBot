@@ -72,8 +72,6 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 			log.Println(err)
 			returnMessage = fmt.Sprintf("Ping失败:%s", err)
 		}
-	} else if strings.Contains(commandText, ".nc") {
-		returnMessage = "你猜"
 	} else if strings.Contains(commandText, "xmsl") {
 		returnMessage = "羡慕死了"
 	} else if strings.Contains(commandText, "杜奕") || strings.Contains(commandText, "杜伊") || strings.Contains(commandText, "喵") {
@@ -91,23 +89,16 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 	} else if strings.Contains(commandText, ".zanwo") {
 		sendLike(conn, GroupMsg.GroupID, GroupMsg.UserID)
 		return
-	} else if strings.Contains(commandText, "wcnm") || strings.Contains(commandText, "cnmd") {
-		returnMessage = "中国国家导弹防御系统"
 	} else if strings.Contains(commandText, ".tp") {
-		rconMsg, err := sendRconTpCmd(commandText[4:])
+		returnMessage = sendRconTpCmd(GroupMsg)
 		if err != nil {
-			log.Printf("RCON执行命令失败: %v", err)
 			returnMessage = "RCON执行命令失败"
-		} else {
-			returnMessage = rconMsg
 		}
-	} else if strings.Contains(commandText, ".white") {
-		_, err := sendRconWhiteCmd(commandText[7:])
+	} else if strings.Contains(commandText, ".bind") {
+		returnMessage, err = bindMCSGamer(GroupMsg)
 		if err != nil {
-			log.Printf("Add to White List faild: %v", err)
-			returnMessage = "Add to White List faild"
-		} else {
-			returnMessage = "Add to White List succeed"
+			log.Printf("绑定失败: %v", err)
+			returnMessage = "绑定失败"
 		}
 	} else if strings.Contains(commandText, ".temperature") {
 		temperature, err := GetTemperature()

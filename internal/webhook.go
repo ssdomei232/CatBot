@@ -26,7 +26,7 @@ type Message struct {
 func HandleWebhook(c *gin.Context) {
 	Config, err := configs.GetConfig()
 	if err != nil {
-		log.Fatalf("加载配置失败: %v", err)
+		log.Printf("加载配置失败: %v", err)
 	}
 	secret := c.DefaultQuery("secret", "")
 	if secret != Config.WebhookSecret {

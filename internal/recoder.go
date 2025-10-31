@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 
+	"git.mmeiblog.cn/mei/CatBot/handler"
 	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
 	_ "modernc.org/sqlite"
 )
@@ -29,7 +30,7 @@ func Record(groupMessage napcat.Message) {
 }
 
 func recordMessage(groupMessage napcat.Message) {
-	db, err := sql.Open("sqlite", "history.db?cache=shared&mode=rwc&_journal_mode=WAL&_busy_timeout=5000")
+	db, err := handler.GetDB()
 	if err != nil {
 		log.Fatalf("打开数据库失败:%s", err)
 	}

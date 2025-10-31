@@ -3,46 +3,125 @@ package internal
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"git.mmeiblog.cn/mei/CatBot/configs"
+	"git.mmeiblog.cn/mei/CatBot/handler"
 	rcon "git.mmeiblog.cn/mei/CatBot/pkg/Rcon"
+	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
 )
 
-func sendRconTpCmd(arg string) (Msg string, err error) {
-	config, err := configs.GetConfig()
-	if err != nil {
-		log.Fatalf("加载配置失败: %v", err)
+func sendRconTpCmd(groupMsg *napcat.Message) (msg string) {
+	if len(groupMsg.RawMessage) < 5 {
+		return "请输入正确的指令"
 	}
-	connectInfo := fmt.Sprintf("%s:%d", config.MCSConfig.Host, config.MCSConfig.Port)
-	rcon, err := rcon.Dial(connectInfo, config.MCSConfig.Password)
+
+	gamerName, _ := getGamerName(groupMsg.Sender.UserID)
+
+	cmd := fmt.Sprintf("tp %s %s", gamerName, groupMsg.RawMessage[4:])
+	msg, err := runRconCmd(cmd)
 	if err != nil {
-		log.Fatalf("RCON连接失败: %v", err)
-		return "", err
+		log.Printf("RCON执行命令失败: %v", err)
+		return "RCON执行命令失败"
 	}
-	cmd := fmt.Sprintf("tp %s", arg)
-	Msg, err = rcon.Execute(cmd)
-	if err != nil {
-		log.Fatalf("RCON执行命令失败: %v", err)
-		return "", err
-	}
-	return Msg, nil
+
+	return "传送成功"
 }
 
-func sendRconWhiteCmd(arg string) (Msg string, err error) {
+func bindMCSGamer(groupMsg *napcat.Message) (msg string, err error) {
+	db, err := handler.GetDB()
+	if err != nil {
+		return "", err
+	}
+	defer db.Close()
+
+	// get game name fron groupMsg
+	if len(groupMsg.RawMessage) < 6 {
+		return "请输入正确的游戏名", nil
+	}
+	gameName := groupMsg.RawMessage[6:]
+	if strings.Contains(gameName, " ") {
+		return "游戏名不能包含空格", nil
+	}
+
+	if isGamerEsist(groupMsg.SelfID) {
+		// 如果玩家已存在，将旧游戏名从白名单删除
+		oldGameName, _ := getGamerName(groupMsg.SelfID)
+		_, err = runRconCmd(fmt.Sprintf("whitelist remove %s", oldGameName))
+		if err != nil {
+			log.Printf("删除白名单失败: %v", err)
+			return "", err
+		}
+
+		// update db
+		_, err = db.Exec("UPDATE mcs SET game_name = ? WHERE qq = ?", gameName, groupMsg.SelfID)
+		if err != nil {
+			log.Printf("更新数据失败: %v", err)
+			return "", err
+		}
+
+		return "更新数据成功,您的旧游戏名已从白名单移除,请放心游玩", nil
+	}
+
+	_, err = db.Exec("INSERT INTO mcs (qq, qq_nickname, game_name) VALUES (?, ?, ?)", groupMsg.SelfID, groupMsg.Sender.Nickname, gameName)
+	if err != nil {
+		log.Printf("插入数据失败: %v", err)
+		return "", err
+	}
+
+	return "绑定成功", nil
+}
+
+func isGamerEsist(qqNumber int) bool {
+	db, err := handler.GetDB()
+	if err != nil {
+		return false
+	}
+	defer db.Close()
+	var count int
+	err = db.QueryRow("SELECT COUNT(*) FROM mcs WHERE qq = ?", qqNumber).Scan(&count)
+	if err != nil {
+		log.Printf("查询数据失败: %v", err)
+		return false
+	}
+
+	if count > 0 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func getGamerName(qqNumber int) (gameName string, err error) {
+	db, err := handler.GetDB()
+	if err != nil {
+		return "", err
+	}
+	defer db.Close()
+	err = db.QueryRow("SELECT game_name FROM mcs WHERE qq = ?", qqNumber).Scan(&gameName)
+	if err != nil {
+		log.Printf("查询数据失败: %v", err)
+		return "", err
+	}
+
+	return gameName, nil
+}
+
+func runRconCmd(cmd string) (Msg string, err error) {
 	config, err := configs.GetConfig()
 	if err != nil {
-		log.Fatalf("加载配置失败: %v", err)
+		log.Printf("加载配置失败: %v", err)
 	}
 	connectInfo := fmt.Sprintf("%s:%d", config.MCSConfig.Host, config.MCSConfig.Port)
 	rcon, err := rcon.Dial(connectInfo, config.MCSConfig.Password)
+	defer rcon.Close()
 	if err != nil {
-		log.Fatalf("RCON连接失败: %v", err)
+		log.Printf("RCON连接失败: %v", err)
 		return "", err
 	}
-	cmd := fmt.Sprintf("whitelist add %s", arg)
 	Msg, err = rcon.Execute(cmd)
 	if err != nil {
-		log.Fatalf("RCON执行命令失败: %v", err)
+		log.Printf("RCON执行命令失败: %v", err)
 		return "", err
 	}
 	return Msg, nil
