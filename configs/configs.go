@@ -21,6 +21,7 @@ type Configs struct {
 	CityName            string    `json:"city_name"`
 	MCSConfig           MCSConfig `json:"mcs_config"`
 	HAConfig            HAConfig  `json:"ha_config"`
+	MYSQL               MYSQL     `json:"mysql"`
 	Prompt              string    `json:"prompt"`
 }
 
@@ -33,6 +34,13 @@ type MCSConfig struct {
 type HAConfig struct {
 	Host  string `json:"host"`
 	Token string `json:"token"`
+}
+
+type MYSQL struct {
+	Host     string `json:"host"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	DBName   string `json:"database"`
 }
 
 func GetConfig() (config Configs, err error) {
