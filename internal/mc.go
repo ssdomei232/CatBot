@@ -16,6 +16,9 @@ func sendRconTpCmd(groupMsg *napcat.Message) (msg string) {
 		return "请输入正确的指令"
 	}
 
+	if !isGamerExist(groupMsg.UserID) {
+		return "请先绑定游戏名"
+	}
 	gamerName, _ := getGamerName(groupMsg.Sender.UserID)
 
 	cmd := fmt.Sprintf("tp %s %s", gamerName, groupMsg.RawMessage[4:])
@@ -44,9 +47,13 @@ func bindMCSGamer(groupMsg *napcat.Message) (msg string, err error) {
 		return "游戏名不能包含空格", nil
 	}
 
-	if isGamerEsist(groupMsg.SelfID) {
+	if isGameNameUsed(gameName) {
+		return "游戏名已存在", nil
+	}
+
+	if isGamerExist(groupMsg.UserID) {
 		// 如果玩家已存在，将旧游戏名从白名单删除
-		oldGameName, _ := getGamerName(groupMsg.SelfID)
+		oldGameName, _ := getGamerName(groupMsg.UserID)
 		_, err = runRconCmd(fmt.Sprintf("whitelist remove %s", oldGameName))
 		if err != nil {
 			log.Printf("删除白名单失败: %v", err)
@@ -54,7 +61,7 @@ func bindMCSGamer(groupMsg *napcat.Message) (msg string, err error) {
 		}
 
 		// update db
-		_, err = db.Exec("UPDATE mcs SET game_name = ? WHERE qq = ?", gameName, groupMsg.SelfID)
+		_, err = db.Exec("UPDATE mcs SET game_name = ? WHERE qq = ?", gameName, groupMsg.UserID)
 		if err != nil {
 			log.Printf("更新数据失败: %v", err)
 			return "", err
@@ -63,7 +70,7 @@ func bindMCSGamer(groupMsg *napcat.Message) (msg string, err error) {
 		return "更新数据成功,您的旧游戏名已从白名单移除,请放心游玩", nil
 	}
 
-	_, err = db.Exec("INSERT INTO mcs (qq, qq_nickname, game_name) VALUES (?, ?, ?)", groupMsg.SelfID, groupMsg.Sender.Nickname, gameName)
+	_, err = db.Exec("INSERT INTO mcs (qq, qq_nickname, game_name) VALUES (?, ?, ?)", groupMsg.UserID, groupMsg.Sender.Nickname, gameName)
 	if err != nil {
 		log.Printf("插入数据失败: %v", err)
 		return "", err
@@ -72,7 +79,7 @@ func bindMCSGamer(groupMsg *napcat.Message) (msg string, err error) {
 	return "绑定成功", nil
 }
 
-func isGamerEsist(qqNumber int) bool {
+func isGamerExist(qqNumber int) bool {
 	db, err := handler.GetDB()
 	if err != nil {
 		return false
@@ -85,6 +92,25 @@ func isGamerEsist(qqNumber int) bool {
 		return false
 	}
 
+	if count > 0 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func isGameNameUsed(gameName string) bool {
+	db, err := handler.GetDB()
+	if err != nil {
+		return false
+	}
+	defer db.Close()
+	var count int
+	err = db.QueryRow("SELECT COUNT(*) FROM mcs WHERE game_name = ?", gameName).Scan(&count)
+	if err != nil {
+		log.Printf("查询数据失败: %v", err)
+		return false
+	}
 	if count > 0 {
 		return true
 	} else {
