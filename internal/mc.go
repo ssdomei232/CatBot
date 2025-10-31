@@ -76,7 +76,7 @@ func bindMCSGamer(groupMsg *napcat.Message) (msg string, err error) {
 		return "", err
 	}
 
-	return "绑定成功", nil
+	return "绑定成功\n欢迎来mc.mei.lv玩(1.21.8原版)", nil
 }
 
 func isGamerExist(qqNumber int) bool {
