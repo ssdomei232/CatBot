@@ -12,7 +12,7 @@ import (
 )
 
 func sendRconTpCmd(groupMsg *napcat.Message) (msg string) {
-	if len(groupMsg.RawMessage) < 5 {
+	if len(groupMsg.RawMessage) < 8 {
 		return "请输入正确的指令"
 	}
 
@@ -31,18 +31,18 @@ func sendRconTpCmd(groupMsg *napcat.Message) (msg string) {
 	return "传送成功"
 }
 
-func bindMCSGamer(groupMsg *napcat.Message) (msg string, err error) {
+func bindMCSGamer(cmdList []string, groupMsg *napcat.Message) (msg string, err error) {
+	if len(cmdList) < 3 {
+		return "请输入正确的指令", nil
+	}
+
 	db, err := handler.GetDB()
 	if err != nil {
 		return "", err
 	}
 	defer db.Close()
 
-	// get game name fron groupMsg
-	if len(groupMsg.RawMessage) < 6 {
-		return "请输入正确的游戏名", nil
-	}
-	gameName := groupMsg.RawMessage[6:]
+	gameName := cmdList[2]
 	if strings.Contains(gameName, " ") {
 		return "游戏名不能包含空格", nil
 	}

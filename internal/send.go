@@ -2,11 +2,9 @@ package internal
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"sync"
 
-	"git.mmeiblog.cn/mei/CatBot/pkg/ai"
 	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
 	"git.mmeiblog.cn/mei/CatBot/pkg/review"
 	"git.mmeiblog.cn/mei/CatBot/tools"
@@ -15,17 +13,16 @@ import (
 
 var writeMutex sync.Mutex
 
-func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
+func HandleMsg(conn *websocket.Conn, messageType int, message []byte) {
 	var err error
-	var GroupMsg *napcat.Message
-	var returnMessage string
-	GroupMsg, err = napcat.Parse(message)
+	var groupMsg *napcat.Message
+	groupMsg, err = napcat.Parse(message)
 	if err != nil {
 		return
 	}
 
 	// 解析消息项
-	messageItems, err := GroupMsg.GetMessageItems()
+	messageItems, err := groupMsg.GetMessageItems()
 	if err != nil || len(messageItems) == 0 {
 		return
 	}
@@ -38,87 +35,61 @@ func SendGroupMsg(conn *websocket.Conn, messageType int, message []byte) {
 		}
 		if imgData, ok := item.Data.(napcat.ImageData); ok {
 			review.CacheImg(imgData.URL)
-			ReviewImage(conn, imgData.URL, GroupMsg.GroupID, GroupMsg.MessageID, GroupMsg.UserID)
+			ReviewImage(conn, imgData.URL, groupMsg.GroupID, groupMsg.MessageID, groupMsg.UserID)
 		}
 	}
 
 	// 原神拦截器
-	if strings.Contains(GroupMsg.RawMessage, "gamecenter.qq.com") {
-		returnMessage = "以上消息存在欺诈行为(点击可能会下载某种'热门'游戏)，请勿相信"
+	if strings.Contains(groupMsg.RawMessage, "gamecenter.qq.com") {
+		reply, _ := napcat.MarshalGroupReplyMsg(groupMsg.GroupID, groupMsg.MessageID, "以上消息存在欺诈行为(点击可能会下载某种'热门'游戏)，请勿相信")
+		writeMutex.Lock()
+		defer writeMutex.Unlock()
+		napcat.SendMsg(conn, reply)
 	}
 
 	// 每次消息都需要执行的部分
-	Record(*GroupMsg)
-	ReviewText(conn, GroupMsg.RawMessage, GroupMsg.GroupID, GroupMsg.MessageID, GroupMsg.UserID)
+	Record(*groupMsg)
+	ReviewText(conn, groupMsg.RawMessage, groupMsg.GroupID, groupMsg.MessageID, groupMsg.UserID)
 
-	// 功能部分
-	if strings.Contains(commandText, ".chat") {
-		if promptWaf(commandText) {
-			returnMessage = "消息被 Prompt WAF 拦截"
-		} else {
-			returnMessage, err = ai.SendComplain(commandText[5:]) // 去掉".chat"前缀
-			if err != nil {
-				log.Printf("ai处理失败: %v", err)
-				return
-			}
-			if llmwaf(returnMessage) {
-				returnMessage = "消息被 LLM WAF 拦截"
-			}
-		}
-	} else if strings.Contains(commandText, ".ping") {
-		ip := commandText[6:] // 去掉".ping "前缀
-		returnMessage, err = tools.Ping(ip)
-		if err != nil {
-			log.Println(err)
-			returnMessage = fmt.Sprintf("Ping失败:%s", err)
-		}
-	} else if strings.Contains(commandText, "xmsl") {
-		returnMessage = "羡慕死了"
-	} else if strings.Contains(commandText, "杜奕") || strings.Contains(commandText, "杜伊") || strings.Contains(commandText, "喵") {
-		returnMessage = "👀"
-	} else if strings.Contains(commandText, ".help") {
-		sendHelp(conn, GroupMsg.GroupID)
+	// Split command
+	cmdList := strings.Split(commandText, " ")
+	if len(cmdList) < 1 {
 		return
-	} else if strings.Contains(commandText, ".weather") {
-		returnMessage = tools.GetWeather()
-	} else if strings.Contains(commandText, ".findfood") {
-		go findfood(conn, commandText[10:], GroupMsg.GroupID)
-		returnMessage = "正在搜索..."
-	} else if strings.Contains(commandText, ".bus") {
-		returnMessage = tools.FindBus(commandText[5:])
-	} else if strings.Contains(commandText, ".zanwo") {
-		sendLike(conn, GroupMsg.GroupID, GroupMsg.UserID)
-		return
-	} else if strings.Contains(commandText, ".tp") {
-		returnMessage = sendRconTpCmd(GroupMsg)
-		if err != nil {
-			returnMessage = "RCON执行命令失败"
-		}
-	} else if strings.Contains(commandText, ".bind") {
-		returnMessage, err = bindMCSGamer(GroupMsg)
-		if err != nil {
-			log.Printf("绑定失败: %v", err)
-			returnMessage = "绑定失败"
-		}
-	} else if strings.Contains(commandText, ".temperature") {
+	}
+
+	switch cmdList[0] {
+	case ".chat":
+		handleAIChat(conn, cmdList, groupMsg)
+	case ".ping":
+		handlePing(conn, cmdList, groupMsg)
+	case "xmsl":
+		reply, _ := napcat.MarshalGroupTextMsg(groupMsg.GroupID, "羡慕死了")
+		writeMutex.Lock()
+		defer writeMutex.Unlock()
+		napcat.SendMsg(conn, reply)
+	case ".tq":
+		msg := tools.GetWeather()
+		reply, _ := napcat.MarshalGroupTextMsg(groupMsg.GroupID, msg)
+		writeMutex.Lock()
+		defer writeMutex.Unlock()
+		napcat.SendMsg(conn, reply)
+	case ".eat":
+		handleEat(conn, cmdList, groupMsg.GroupID)
+	case ".temp":
+		var msg string
 		temperature, err := GetTemperature()
 		if err != nil {
-			log.Printf("获取温度失败: %v", err)
-			returnMessage = "获取温度失败"
+			return
 		} else {
-			returnMessage = fmt.Sprintf("当前室外温度为: %s°C", temperature)
+			msg = fmt.Sprintf("当前温度为: %s°C", temperature)
 		}
+		reply, _ := napcat.MarshalGroupTextMsg(groupMsg.GroupID, msg)
+		writeMutex.Lock()
+		defer writeMutex.Unlock()
+		napcat.SendMsg(conn, reply)
+	case ".mc":
+		handleMc(conn, cmdList, groupMsg)
 	}
 
-	sendMessage, err := napcat.MarshalGroupTextMsg(GroupMsg.GroupID, returnMessage)
-	if err != nil {
-		log.Printf("生成群组消息失败: %v", err)
-		return
-	}
-
-	writeMutex.Lock()
-	defer writeMutex.Unlock()
-	if err = napcat.SendMsg(conn, sendMessage); err != nil {
-		log.Printf("发送响应失败: %v", err)
-	}
+	return
 }

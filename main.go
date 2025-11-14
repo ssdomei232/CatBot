@@ -20,12 +20,12 @@ func main() {
 	connectInfo := fmt.Sprintf("ws://%s:%d/?access_token=%s", Config.NapcatHost, Config.NapcatWebsocketPort, Config.NapcatToken)
 	client := napcat.New(
 		connectInfo,
-		internal.SendGroupMsg,
+		internal.HandleMsg,
 		napcat.WithRetryDelay(5*time.Second),
 	)
 
 	go func() {
-		client.Start(internal.SendGroupMsg)
+		client.Start(internal.HandleMsg)
 	}()
 
 	r := gin.Default()

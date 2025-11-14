@@ -5,84 +5,27 @@ import (
 	"errors"
 )
 
-const (
-	ActionSendGroupMsg = "send_group_msg"
-	TypeText           = "text"
-	TypeAt             = "at"
-	TypeImage          = "image"
-	TypeAudio          = "record"
-	TypeFile           = "file"
-	TypeVideo          = "video"
-	TypeFace           = "face"
-	TypeReply          = "reply"
-	TypeMusic          = "music"
-)
-
-// Websocket 消息基本结构
-type WSMsg struct {
-	Action string `json:"action"`
-	Params any    `json:"params"`
+// 编码撤回消息
+func MarshalDeleteMessage(messageID int) ([]byte, error) {
+	message := WSMsg{
+		Action: "delete_msg",
+		Params: DeleteMsgParams{MessageId: messageID},
+	}
+	return json.Marshal(message)
 }
 
-// websocket 连接比较特别的发送文本消息的方式
-type GroupTextMsgParams struct {
-	GroupID int    `json:"group_id"`
-	Message string `json:"message"`
-}
+// 编码群禁言消息
+func MarshalGroupBan(groupID int, userID int, duration int) ([]byte, error) {
+	message := WSMsg{
+		Action: "set_group_ban",
+		Params: GroupBanParams{
+			GroupID:  groupID,
+			UserID:   userID,
+			Duration: duration,
+		},
+	}
 
-// 群消息基本结构
-type GroupMsgParams struct {
-	GroupID int `json:"group_id"`
-	Message any `json:"message"`
-}
-
-// 群消息内容基本结构
-type GroupMsgSegment struct {
-	Type string `json:"type"`
-	Data any    `json:"data"`
-}
-
-// 群@消息
-type GroupAtMessageData struct {
-	QQ int `json:"qq"`
-}
-
-// 群文本消息
-type GroupTextMsgData struct {
-	Text string `json:"text"`
-}
-
-// 群语音/视频消息(这两种消息的Data是一样的)
-type GroupAudioVideoMsgData struct {
-	File string `json:"file"`
-}
-
-// 群图片消息
-type GroupImgMsgData struct {
-	File    string `json:"file"`
-	Summary string `json:"summary"`
-}
-
-// 群文件消息
-type GroupFileMsgData struct {
-	File string `json:"file"`
-	Name string `json:"name"`
-}
-
-// 群系统表情消息
-type GroupFaceMsgData struct {
-	ID int `json:"id"`
-}
-
-// 群回复消息
-type GroupReplyMsgData struct {
-	ID int `json:"id"`
-}
-
-// 群音乐卡片消息
-type GroupMusicCardData struct {
-	Type string `json:"type"`
-	ID   string `json:"id"`
+	return json.Marshal(message)
 }
 
 // 编码群文本消息
@@ -300,4 +243,19 @@ func MarshalGroupMusicMsg(groupID int, musicType string, musicID string) ([]byte
 		},
 	}
 	return json.Marshal(msg)
+}
+
+// 编码点赞消息
+func MarshalLikeMsg(userId int, times int) ([]byte, error) {
+	likeMsg := WSMsg{
+		Action: "send_like",
+		Params: struct {
+			UserId int `json:"user_id"`
+			Times  int `json:"times"`
+		}{
+			UserId: userId,
+			Times:  times,
+		},
+	}
+	return json.Marshal(likeMsg)
 }
