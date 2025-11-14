@@ -180,7 +180,7 @@ func ReviewImage(imgUrl string) (isBadImage bool, err error) {
 		return false, fmt.Errorf("解析响应体失败: %w", err)
 	}
 
-	if result.Hentai > 0.5 || result.Porn > 0.5 || result.Sexy > 0.5 {
+	if result.Hentai > 0.7 || result.Porn > 0.7 || result.Sexy > 0.7 {
 		return true, nil
 	}
 	return false, nil
