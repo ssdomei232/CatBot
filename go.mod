@@ -9,6 +9,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/kirklin/go-swd v0.0.3
 	github.com/mkelcik/go-ha-client v1.0.0
+	github.com/robfig/cron/v3 v3.0.1
 	modernc.org/sqlite v1.39.0
 )
 
