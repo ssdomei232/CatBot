@@ -62,11 +62,6 @@ func HandleMsg(conn *websocket.Conn, messageType int, message []byte) {
 		handleAIChat(conn, cmdList, groupMsg)
 	case ".ping":
 		handlePing(conn, cmdList, groupMsg)
-	case "xmsl":
-		reply, _ := napcat.MarshalGroupTextMsg(groupMsg.GroupID, "羡慕死了")
-		writeMutex.Lock()
-		defer writeMutex.Unlock()
-		napcat.SendMsg(conn, reply)
 	case ".tq":
 		msg := tools.GetWeather()
 		reply, _ := napcat.MarshalGroupTextMsg(groupMsg.GroupID, msg)
