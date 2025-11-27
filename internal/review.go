@@ -5,9 +5,9 @@ import (
 	"log"
 
 	"git.mmeiblog.cn/mei/CatBot/configs"
-	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
 	"git.mmeiblog.cn/mei/CatBot/pkg/review"
 	"github.com/gorilla/websocket"
+	napcat "github.com/ssdomei232/go-napcat-ws"
 )
 
 func ReviewText(conn *websocket.Conn, message string, groupid int, messageId int, qqNumber int) {

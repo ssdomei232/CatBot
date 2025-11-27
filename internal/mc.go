@@ -8,7 +8,7 @@ import (
 	"git.mmeiblog.cn/mei/CatBot/configs"
 	"git.mmeiblog.cn/mei/CatBot/handler"
 	rcon "git.mmeiblog.cn/mei/CatBot/pkg/Rcon"
-	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
+	napcat "github.com/ssdomei232/go-napcat-ws"
 )
 
 func sendRconTpCmd(groupMsg *napcat.Message) (msg string) {

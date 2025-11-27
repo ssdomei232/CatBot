@@ -5,10 +5,10 @@ import (
 	"strings"
 	"sync"
 
-	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
 	"git.mmeiblog.cn/mei/CatBot/pkg/review"
 	"git.mmeiblog.cn/mei/CatBot/tools"
 	"github.com/gorilla/websocket"
+	napcat "github.com/ssdomei232/go-napcat-ws"
 )
 
 var writeMutex sync.Mutex

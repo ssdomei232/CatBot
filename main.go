@@ -7,9 +7,9 @@ import (
 
 	"git.mmeiblog.cn/mei/CatBot/configs"
 	"git.mmeiblog.cn/mei/CatBot/internal"
-	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
+	napcat "github.com/ssdomei232/go-napcat-ws"
 )
 
 func main() {

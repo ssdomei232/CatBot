@@ -5,9 +5,9 @@ import (
 
 	"git.mmeiblog.cn/mei/CatBot/configs"
 	"git.mmeiblog.cn/mei/CatBot/pkg/ai"
-	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
 	"git.mmeiblog.cn/mei/CatBot/tools"
 	"github.com/gorilla/websocket"
+	napcat "github.com/ssdomei232/go-napcat-ws"
 )
 
 func handleAIChat(conn *websocket.Conn, cmdList []string, groupMsg *napcat.Message) {

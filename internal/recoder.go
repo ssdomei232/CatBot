@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"git.mmeiblog.cn/mei/CatBot/handler"
-	"git.mmeiblog.cn/mei/CatBot/pkg/napcat"
+	napcat "github.com/ssdomei232/go-napcat-ws"
 	_ "modernc.org/sqlite"
 )
 
