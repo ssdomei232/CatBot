@@ -21,7 +21,7 @@ func sendRconTpCmd(groupMsg *napcat.Message) (msg string) {
 	}
 	gamerName, _ := getGamerName(groupMsg.Sender.UserID)
 
-	cmd := fmt.Sprintf("tp %s %s", gamerName, groupMsg.RawMessage[4:])
+	cmd := fmt.Sprintf("tp %s %s", gamerName, groupMsg.RawMessage[7:]) // .mc tp xxx
 	msg, err := runRconCmd(cmd)
 	if err != nil {
 		log.Printf("RCON执行命令失败: %v", err)
