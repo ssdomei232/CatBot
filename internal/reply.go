@@ -134,5 +134,4 @@ func handleMc(conn *websocket.Conn, cmdList []string, groupMsg *napcat.Message) 
 		defer writeMutex.Unlock()
 		napcat.SendMsg(conn, reply)
 	}
-
 }
