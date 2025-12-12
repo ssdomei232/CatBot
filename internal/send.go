@@ -84,7 +84,9 @@ func HandleMsg(conn *websocket.Conn, messageType int, message []byte) {
 		napcat.SendMsg(conn, reply)
 	case ".mc":
 		handleMc(conn, cmdList, groupMsg)
+	case ".bus":
+		handleFindBus(conn, cmdList, groupMsg.GroupID)
+	case ".like":
+		handleLike(conn, groupMsg)
 	}
-
-	return
 }

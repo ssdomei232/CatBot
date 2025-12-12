@@ -140,11 +140,11 @@ func runRconCmd(cmd string) (Msg string, err error) {
 	}
 	connectInfo := fmt.Sprintf("%s:%d", config.MCSConfig.Host, config.MCSConfig.Port)
 	rcon, err := rcon.Dial(connectInfo, config.MCSConfig.Password)
-	defer rcon.Close()
 	if err != nil {
 		log.Printf("RCON连接失败: %v", err)
 		return "", err
 	}
+	defer rcon.Close()
 	Msg, err = rcon.Execute(cmd)
 	if err != nil {
 		log.Printf("RCON执行命令失败: %v", err)

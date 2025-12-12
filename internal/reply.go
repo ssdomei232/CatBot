@@ -35,8 +35,6 @@ func handleAIChat(conn *websocket.Conn, cmdList []string, groupMsg *napcat.Messa
 	writeMutex.Lock()
 	defer writeMutex.Unlock()
 	napcat.SendMsg(conn, reply)
-
-	return
 }
 
 func handlePing(conn *websocket.Conn, cmdList []string, groupMsg *napcat.Message) {
@@ -57,8 +55,6 @@ func handlePing(conn *websocket.Conn, cmdList []string, groupMsg *napcat.Message
 	writeMutex.Lock()
 	defer writeMutex.Unlock()
 	napcat.SendMsg(conn, reply)
-
-	return
 }
 
 func handleEat(conn *websocket.Conn, cmdList []string, groupId int) {

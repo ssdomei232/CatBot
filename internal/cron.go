@@ -40,7 +40,10 @@ func CheckWeatherPerDays() {
 	authorization := fmt.Sprintf("Bearer %s", Config.NapcatToken)
 	req.Header.Add("Authorization", authorization)
 
-	res, _ := client.Do(req)
+	res, err := client.Do(req)
+	if err != nil {
+		log.Printf("发送天气预报请求失败: %v", err)
+		return
+	}
 	defer res.Body.Close()
-	return
 }
