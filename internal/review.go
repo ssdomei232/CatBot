@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"log"
+	"slices"
 
 	"git.mmeiblog.cn/mei/CatBot/configs"
 	"git.mmeiblog.cn/mei/CatBot/pkg/review"
@@ -28,9 +29,6 @@ func ReviewText(conn *websocket.Conn, message string, groupid int, messageId int
 }
 
 func ReviewImage(conn *websocket.Conn, imgUrl string, groupid int, messageId int, qqNumber int) {
-	if !isAdminGroup(groupid) && qqNumber != 3979567422 {
-		return
-	}
 	if isBadMessage, err := review.ReviewImage(imgUrl); isBadMessage {
 		errMsg := fmt.Sprintf("err:%s", err)
 		if err != nil {
@@ -54,10 +52,5 @@ func isAdminGroup(groupId int) bool {
 		log.Fatalf("加载配置失败: %v", err)
 	}
 
-	for _, value := range Config.AdminGroups {
-		if value == groupId {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(Config.AdminGroups, groupId)
 }

@@ -34,8 +34,10 @@ func HandleMsg(conn *websocket.Conn, messageType int, message []byte) {
 			commandText = textData.Text
 		}
 		if imgData, ok := item.Data.(napcat.ImageData); ok {
-			review.CacheImg(imgData.URL)
-			ReviewImage(conn, imgData.URL, groupMsg.GroupID, groupMsg.MessageID, groupMsg.UserID)
+			if isAdminGroup(groupMsg.GroupID) {
+				review.CacheImg(imgData.URL)
+				ReviewImage(conn, imgData.URL, groupMsg.GroupID, groupMsg.MessageID, groupMsg.UserID)
+			}
 		}
 	}
 
