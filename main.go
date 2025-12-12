@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"git.mmeiblog.cn/mei/CatBot/configs"
+	"git.mmeiblog.cn/mei/CatBot/handler/webhook"
 	"git.mmeiblog.cn/mei/CatBot/internal"
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
@@ -38,6 +39,6 @@ func main() {
 
 	// webhook
 	r := gin.Default()
-	r.POST("/webhook", internal.HandleWebhook)
+	r.POST("/webhook", webhook.HandleWebhook)
 	r.Run(":8085")
 }
