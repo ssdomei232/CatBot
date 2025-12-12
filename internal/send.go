@@ -5,7 +5,6 @@ import (
 	"strings"
 	"sync"
 
-	"git.mmeiblog.cn/mei/CatBot/pkg/review"
 	"git.mmeiblog.cn/mei/CatBot/tools"
 	"github.com/gorilla/websocket"
 	napcat "github.com/ssdomei232/go-napcat-ws"
@@ -35,7 +34,6 @@ func HandleMsg(conn *websocket.Conn, messageType int, message []byte) {
 		}
 		if imgData, ok := item.Data.(napcat.ImageData); ok {
 			if isAdminGroup(groupMsg.GroupID) {
-				review.CacheImg(imgData.URL)
 				ReviewImage(conn, imgData.URL, groupMsg.GroupID, groupMsg.MessageID, groupMsg.UserID)
 			}
 		}
