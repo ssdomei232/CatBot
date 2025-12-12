@@ -183,5 +183,11 @@ func ReviewImage(imgUrl string) (isBadImage bool, err error) {
 	if result.Hentai > 0.7 || result.Porn > 0.7 || result.Sexy > 0.7 {
 		return true, nil
 	}
+
+	err = os.Remove(filename)
+	if err != nil {
+		log.Printf("删除缓存文件失败: %v", err)
+	}
+
 	return false, nil
 }
