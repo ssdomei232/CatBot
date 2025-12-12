@@ -1,49 +1,27 @@
 package internal
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 
 	"git.mmeiblog.cn/mei/CatBot/configs"
+	napcathttp "git.mmeiblog.cn/mei/CatBot/pkg/napcat-http"
 	"git.mmeiblog.cn/mei/CatBot/tools"
 )
 
 func CheckWeatherPerDays() {
-	Config, err := configs.GetConfig()
+	config, err := configs.GetConfig()
 	if err != nil {
 		log.Printf("加载配置失败: %v", err)
 	}
 
 	msg := tools.CheckRainForecast()
 
-	url := fmt.Sprintf("http://%s:%d/send_group_msg", Config.NapcatHost, Config.NapcatHttpPort)
-	method := "POST"
-	paylooadStruct := GroupMessage{
-		GroupID: "726833553",
-		Message: []Message{
-			{
-				Type: "text",
-				Data: struct {
-					Text string `json:"text"`
-				}{Text: msg},
-			},
-		},
-	}
-	payloadString, _ := json.Marshal(paylooadStruct)
-	payload := bytes.NewBuffer(payloadString)
-	client := &http.Client{}
-	req, _ := http.NewRequest(method, url, payload)
-	req.Header.Add("Content-Type", "application/json")
-	authorization := fmt.Sprintf("Bearer %s", Config.NapcatToken)
-	req.Header.Add("Authorization", authorization)
-
-	res, err := client.Do(req)
+	url := fmt.Sprintf("http://%s:%d", config.NapcatHost, config.NapcatHttpPort)
+	napcatClient := napcathttp.NewClient(config.NapcatToken, url)
+	err = napcatClient.SendGroupMsg(fmt.Sprint(726833553), msg)
 	if err != nil {
 		log.Printf("发送天气预报请求失败: %v", err)
 		return
 	}
-	defer res.Body.Close()
 }
